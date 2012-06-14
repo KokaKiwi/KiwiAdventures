@@ -3,6 +3,7 @@ package com.kokakiwi.games.adventures.game;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.FixtureDef;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -10,12 +11,15 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
+import com.kokakiwi.games.adventures.Main;
 import com.kokakiwi.games.adventures.maths.Vector2f;
 import com.kokakiwi.games.adventures.maths.VectorsUtils;
+import com.kokakiwi.games.adventures.utils.GraphicsUtils;
 
 public class Tile extends Entity
 {
-    private SpriteSheet tiles;
+    private SpriteSheet  tiles;
+    private PolygonShape shape;
     
     public Tile(Board board, float x, float y)
     {
@@ -24,31 +28,28 @@ public class Tile extends Entity
     
     public Tile(Board board, Vector2f position)
     {
-        super(board, position);
-        
+        super(board, position, 16.0f, 16.0f);
     }
     
     @Override
     public Body createBody(Vector2f position)
     {
         BodyDef def = new BodyDef();
-        def.position = VectorsUtils.toWorldVector(position, 16, 16);
+        def.position = VectorsUtils.toWorldVector(position, width * Main.scale, height * Main.scale);
         
         Body body = board.getWorld().createBody(def);
         
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(16.0f / 2, 16.0f / 2);
+        shape = new PolygonShape();
+        shape.setAsBox(width * Main.scale / 2, height * Main.scale / 2);
         
-        body.createFixture(shape, 0);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0.0f;
+        fixtureDef.restitution = 0.0f;
+        
+        body.createFixture(fixtureDef);
         
         return body;
-    }
-    
-    @Override
-    public void setPosition(Vector2f position)
-    {
-        super.setPosition(position);
-        body.getPosition().set(VectorsUtils.toWorldVector(position, 16, 16));
     }
     
     public void init(GameContainer gl) throws SlickException
@@ -61,21 +62,18 @@ public class Tile extends Entity
     
     public void update(GameContainer gl, int delta) throws SlickException
     {
-        position = VectorsUtils.toCoreVector(body.getPosition(), 16, 16);
+        
     }
     
     public void render(GameContainer gl, Graphics g) throws SlickException
     {
-        tiles.getSprite(0, 0).draw(position.x, position.y);
+        tiles.getSprite(0, 0).draw(
+                VectorsUtils.toCoreVector(body.getPosition(), width
+                        * Main.scale, height * Main.scale).x,
+                VectorsUtils.toCoreVector(body.getPosition(), width
+                        * Main.scale, height * Main.scale).y, Main.scale);
         
-        g.setColor(Color.cyan);
-        
-        float x1 = body.getPosition().x - (16.0f / 2);
-        float y1 = body.getPosition().y - (16.0f / 2);
-        float width = 16.0f;
-        float height = 16.0f;
-        
-        g.drawRect(x1, y1, width, height);
+        GraphicsUtils.drawBox(g, shape, body.getPosition(), Color.cyan);
     }
     
 }

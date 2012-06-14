@@ -12,6 +12,8 @@ import com.kokakiwi.games.adventures.utils.SystemUtils;
 
 public class Main
 {
+    public static float scale = 3.0f;
+    
     private final MainGame         game;
     private final AppGameContainer container;
     
@@ -34,19 +36,19 @@ public class Main
         
         board = new Board();
         
-        for (float x = 0; x < 1024; x += 16)
+        for (float x = 0; x < 1024; x += 16 * scale)
         {
-            Tile tile = new Tile(board, x, 768 - 16);
+            Tile tile = new Tile(board, x, 768 - (16 * scale));
             board.addChild(tile);
         }
         
-        for(float x = 16 * 10; x < 16 * 15; x += 16)
+        for(float x = 16 * 10 * scale; x < 16 * 15 * scale; x += 16  * scale)
         {
-            Tile tile = new Tile(board, x, 768 - (16 * 5));
+            Tile tile = new Tile(board, x, 768 - (16 * 5 * scale));
             board.addChild(tile);
         }
         
-        Player player = new Player(board, 1024 / 2, 768 - 16 - 24 - 200);
+        Player player = new Player(board, 1024 / 2, 768 - (16 * scale) - (24 * scale) - 200);
         board.addChild(player);
     }
     
