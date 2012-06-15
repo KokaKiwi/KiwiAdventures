@@ -16,11 +16,11 @@ public class VectorsUtils
     
     public static Vector2f toCoreVector(Vec2 vec, float width, float height)
     {
-        return new Vector2f(vec.x - (width / 2), vec.y - (height / 2));
+        return new Vector2f(vec.x - width / 2, vec.y - height / 2);
     }
     
     public static Vec2 toWorldVector(Vector2f vec, float width, float height)
     {
-        return new Vec2(vec.x + (width / 2), vec.y + (height / 2));
+        return new Vec2(vec.x + width / 2, vec.y + height / 2);
     }
 }

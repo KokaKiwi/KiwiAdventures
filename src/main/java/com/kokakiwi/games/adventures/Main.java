@@ -6,13 +6,11 @@ import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
 import com.kokakiwi.games.adventures.game.Board;
-import com.kokakiwi.games.adventures.game.Player;
-import com.kokakiwi.games.adventures.game.Tile;
 import com.kokakiwi.games.adventures.utils.SystemUtils;
 
 public class Main
 {
-    public static float scale = 3.0f;
+    public static float            scale = 1.0f;
     
     private final MainGame         game;
     private final AppGameContainer container;
@@ -22,7 +20,7 @@ public class Main
     public Main() throws SlickException
     {
         // Init LWJGL
-        File nativesDir = new File("natives" + File.separator
+        final File nativesDir = new File("natives" + File.separator
                 + SystemUtils.getSystemOS().name());
         System.setProperty("org.lwjgl.librarypath",
                 nativesDir.getAbsolutePath());
@@ -35,21 +33,6 @@ public class Main
         container.setDisplayMode(1024, 768, false);
         
         board = new Board();
-        
-        for (float x = 0; x < 1024; x += 16 * scale)
-        {
-            Tile tile = new Tile(board, x, 768 - (16 * scale));
-            board.addChild(tile);
-        }
-        
-        for(float x = 16 * 10 * scale; x < 16 * 15 * scale; x += 16  * scale)
-        {
-            Tile tile = new Tile(board, x, 768 - (16 * 5 * scale));
-            board.addChild(tile);
-        }
-        
-        Player player = new Player(board, 1024 / 2, 768 - (16 * scale) - (24 * scale) - 200);
-        board.addChild(player);
     }
     
     public MainGame getGame()
@@ -73,7 +56,7 @@ public class Main
         {
             container.start();
         }
-        catch (SlickException e)
+        catch (final SlickException e)
         {
             e.printStackTrace();
         }
@@ -90,7 +73,7 @@ public class Main
         {
             new Main().start();
         }
-        catch (SlickException e)
+        catch (final SlickException e)
         {
             e.printStackTrace();
         }

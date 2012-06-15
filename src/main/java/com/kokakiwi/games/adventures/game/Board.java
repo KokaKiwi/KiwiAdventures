@@ -4,22 +4,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.World;
+import org.newdawn.fizzy.World;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.tiled.TiledMap;
 
 import com.kokakiwi.engine.time.TimeEngine;
 import com.kokakiwi.engine.time.data.Entity;
 import com.kokakiwi.engine.time.storage.memory.MemoryStorage;
+import com.kokakiwi.games.adventures.Main;
 
 public class Board implements IRenderable
 {
     private final List<IRenderable> children  = new LinkedList<IRenderable>();
     private final World             world;
-    private float                   speed     = 1 / 60.0f;
+    private float                   speed     = 0.01f;
     
     private final TimeEngine        timeEngine;
     private final Stack<Long>       times     = new Stack<Long>();
@@ -27,13 +28,14 @@ public class Board implements IRenderable
     
     public Board()
     {
-        this(new World(new Vec2(0.0f, 1.0f), true));
+        this(new World(1.0f));
+        world.setBounds(0.0f, 0.0f, 1024.0f, 768.0f);
     }
     
     public Board(World world)
     {
         this.world = world;
-        this.timeEngine = new TimeEngine(new MemoryStorage());
+        timeEngine = new TimeEngine(new MemoryStorage());
     }
     
     public List<IRenderable> getChildren()
@@ -55,16 +57,6 @@ public class Board implements IRenderable
         children.remove(child);
     }
     
-    public Vec2 getGravity()
-    {
-        return world.getGravity();
-    }
-    
-    public void setGravity(Vec2 gravity)
-    {
-        world.setGravity(gravity);
-    }
-    
     public World getWorld()
     {
         return world;
@@ -82,7 +74,31 @@ public class Board implements IRenderable
     
     public void init(GameContainer gl) throws SlickException
     {
-        for (IRenderable child : children)
+        final TiledMap map = new TiledMap("res/map.tmx", false);
+        
+        final int tilesLayer = map.getLayerIndex("tiles");
+        
+        for (int x = 0; x < map.getWidth(); x++)
+        {
+            for (int y = 0; y < map.getHeight(); y++)
+            {
+                final int tileID = map.getTileId(x, y, tilesLayer);
+                if (tileID == 1)
+                {
+                    final Tile tile = new Tile(this, x * 16 * Main.scale, y
+                            * 16 * Main.scale);
+                    addChild(tile);
+                }
+            }
+        }
+        
+        final int x = map.getObjectX(0, 0);
+        final int y = map.getObjectY(0, 0);
+        
+        final Player player = new Player(this, x * Main.scale, y * Main.scale);
+        addChild(player);
+        
+        for (final IRenderable child : children)
         {
             child.init(gl);
         }
@@ -90,11 +106,12 @@ public class Board implements IRenderable
     
     public void update(GameContainer gl, int delta) throws SlickException
     {
-        Input in = gl.getInput();
+        final Input in = gl.getInput();
         
-        if ((!in.isKeyDown(Input.KEY_LSHIFT) && !in.isKeyDown(Input.KEY_RSHIFT))
+        if (!in.isKeyDown(Input.KEY_LSHIFT) && !in.isKeyDown(Input.KEY_RSHIFT)
                 || times.empty())
         {
+            timeEngine.save();
             if (timestamp == 0)
             {
                 timestamp = System.currentTimeMillis();
@@ -102,27 +119,29 @@ public class Board implements IRenderable
             timestamp += delta;
             times.push(Long.valueOf(timestamp));
             
-            world.step(delta * speed, 1, 1);
+            world.update(delta * speed);
             
             timeEngine.save(timestamp);
             
-            for (IRenderable child : children)
+            for (final IRenderable child : children)
             {
                 child.update(gl, delta);
             }
         }
         else
         {
-            times.pop();
+            // times.pop();
+            //
+            // timeEngine.apply(times.peek().longValue());
             
-            timeEngine.apply(times.peek().longValue());
+            timeEngine.rewind(delta);
         }
         
     }
     
     public void render(GameContainer gl, Graphics g) throws SlickException
     {
-        for (IRenderable child : children)
+        for (final IRenderable child : children)
         {
             child.render(gl, g);
         }

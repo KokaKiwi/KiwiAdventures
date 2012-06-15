@@ -27,6 +27,9 @@
 		<fileSet>
 			<directory>libs</directory>
 		</fileSet>
+        <fileSet>
+            <directory>res</directory>
+        </fileSet>
 	</fileSets>
 	<files>
 		<file>

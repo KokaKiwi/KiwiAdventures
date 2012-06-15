@@ -1,16 +1,15 @@
 package com.kokakiwi.games.adventures.game;
 
-import org.jbox2d.dynamics.Body;
+import org.newdawn.fizzy.Body;
 
 import com.kokakiwi.games.adventures.maths.Vector2f;
-import com.kokakiwi.games.adventures.maths.VectorsUtils;
 
 public abstract class Entity implements IRenderable
 {
-    protected final Board board;
-    protected final Body  body;
-    protected final float width;
-    protected final float height;
+    protected final Board   board;
+    protected final Body<?> body;
+    protected final float   width;
+    protected final float   height;
     
     public Entity(Board board, float x, float y, float width, float height)
     {
@@ -25,11 +24,13 @@ public abstract class Entity implements IRenderable
         this.height = height;
         
         body = createBody(position);
+        
+        board.getWorld().add(body);
     }
     
     public void setPosition(Vector2f position)
     {
-        body.getPosition().set(VectorsUtils.toVec2(position));
+        body.setPosition(position.x, position.y);
     }
     
     public Board getBoard()
@@ -37,10 +38,10 @@ public abstract class Entity implements IRenderable
         return board;
     }
     
-    public Body getBody()
+    public Body<?> getBody()
     {
         return body;
     }
     
-    public abstract Body createBody(Vector2f position);
+    public abstract Body<?> createBody(Vector2f position);
 }

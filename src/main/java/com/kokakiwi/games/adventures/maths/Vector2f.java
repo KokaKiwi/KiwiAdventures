@@ -280,8 +280,8 @@ public class Vector2f
      */
     public float distanceSquared(Vector2f vec)
     {
-        float dx = vec.x - x;
-        float dy = vec.y - y;
+        final float dx = vec.x - x;
+        final float dy = vec.y - y;
         
         return dx * dx + dy * dy;
     }
@@ -319,7 +319,7 @@ public class Vector2f
      */
     public Vector2f normalize()
     {
-        float length = length();
+        final float length = length();
         
         return new Vector2f(x / length, y / length);
     }
@@ -353,8 +353,8 @@ public class Vector2f
      */
     public Vector2f scale(float scale)
     {
-        this.x *= scale;
-        this.y *= scale;
+        x *= scale;
+        y *= scale;
         
         return this;
     }
@@ -362,7 +362,7 @@ public class Vector2f
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("Vector2f [x=");
         builder.append(x);
         builder.append(", y=");
@@ -385,16 +385,26 @@ public class Vector2f
     public boolean equals(Object obj)
     {
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
-        Vector2f other = (Vector2f) obj;
+        }
+        final Vector2f other = (Vector2f) obj;
         if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x))
+        {
             return false;
+        }
         if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y))
+        {
             return false;
+        }
         return true;
     }
     
